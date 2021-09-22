@@ -1,0 +1,16 @@
+{
+    "manifest_version": 2,
+    "name": "ictisOnline Extension",
+    "version": "1.0.0",
+    "permissions": [ "storage" ],
+    "content_scripts": [
+        {
+            "matches": [ "http://ictis.online/", "https://ictis.online/"],
+            "js": ["relocate.js"]
+        },
+        {
+            "matches": [ "http://165.22.28.187/schedule-api/static/index.html" ],
+            "js": ["content.js"]
+        }
+    ]
+}

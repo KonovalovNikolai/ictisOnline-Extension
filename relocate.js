@@ -1,0 +1,1 @@
+window.location.href = 'http://165.22.28.187/schedule-api/static/index.html';
