@@ -2,7 +2,6 @@ document.title = 'ictisOnline Extension';
 
 const button = document.getElementById("search-button");
 const input = document.getElementById("search-field");
-const currentDate = new Date();
 
 const injectedCode = 
 `
@@ -24,12 +23,15 @@ function parseTableFromResponse(response) {
         noTableRender(response);
         return;
     }
-    
+
     var html = '<table class="striped"><thead>';
     var separator = '</thead><tbody>';
     var end = '</tbody></table>';
     var counter = 0;
     for (var i in table) {
+
+        
+
         var row = '<tr>';
         var rowEnd = '</tr>';
         for (var j in table[i]) {
@@ -47,6 +49,11 @@ function parseTableFromResponse(response) {
     document.getElementById("table-block").innerHTML = html;
     global_week = response.table.week;
     global_group = response.table.group;
+
+    if (firstRequest) {
+        current_week = response.table.week;
+        firstRequest = false;
+    }
 }
 
 function markWeek() {
