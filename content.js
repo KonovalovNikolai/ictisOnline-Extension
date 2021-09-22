@@ -7,6 +7,24 @@ const injectedCode =
 `
 var firstRequest = true;
 var current_week = null;
+var index = -1;
+
+const currentDate = new Date();
+
+const weekDay = { 
+    'января' : 0, 
+    'февраля' : 1, 
+    'марта' : 2,
+    'апреля' : 3,
+    'мая' : 4,
+    'июня' : 5,
+    'июля' : 6,
+    'августа' : 7,
+    'сентября' : 8,
+    'октября' : 9,
+    'ноября' : 10,
+    'декабря' : 11
+};
 
 document.getElementById("search-button").onclick = function () {
     var value = document.getElementById("search-field").value;
@@ -18,42 +36,67 @@ document.getElementById("search-button").onclick = function () {
 
 function parseTableFromResponse(response) {
     console.log(response);
+
     var table = response.table.table;
     if (!table.length) {
         noTableRender(response);
         return;
     }
 
-    var html = '<table class="striped"><thead>';
-    var separator = '</thead><tbody>';
-    var end = '</tbody></table>';
-    var counter = 0;
-    for (var i in table) {
-
-        
-
-        var row = '<tr>';
-        var rowEnd = '</tr>';
-        for (var j in table[i]) {
-            var template = '<td>' + table[i][j] + '</td>';
-            row += template;
-        }
-        row += rowEnd;
-        counter += 1;
-        if (counter === 2) {
-            row += separator;
-        }
-        html += row;
-    }
-    html += end;
-    document.getElementById("table-block").innerHTML = html;
     global_week = response.table.week;
     global_group = response.table.group;
 
     if (firstRequest) {
         current_week = response.table.week;
-        firstRequest = false;
     }
+
+    var checkDate = false;
+    if (current_week === global_week){
+        checkDate = true;
+    }
+
+    var html = '<table class="striped"><thead>';
+    var separator = '</thead><tbody>';
+    var end = '</tbody></table>';
+    var counter = 0;
+
+    for (var i in table) {
+        var row = '';
+        var rowEnd = '</tr>';
+
+        for (var j in table[i]) {
+            if (firstRequest && checkDate && j == 0) {
+                if (table[i][j].includes(currentDate.getDate())){
+                    console.log(weekDay[table[i][j].slice(table[i][j].indexOf(' ')+2)] == currentDate.getMonth());
+                    if (weekDay[table[i][j].slice(table[i][j].indexOf(' ')+2)] == currentDate.getMonth()) {
+                        index = i;
+                        firstRequest = false;
+                    }
+                }
+            }
+            var template = '<td>' + table[i][j] + '</td>';
+            row += template;
+        }
+
+        var rowStart = '<tr>';
+        if (checkDate && index === i){
+            rowStart = '<tr style="background-color: rgb(155, 204, 137)">';
+        }
+
+        row = rowStart + row + rowEnd;
+        counter += 1;
+
+        if (counter === 2) {
+            row += separator;
+        }
+
+        html += row;
+    }
+
+    html += end;
+    document.getElementById("table-block").innerHTML = html;
+
+    firstRequest = false;
 }
 
 function markWeek() {
