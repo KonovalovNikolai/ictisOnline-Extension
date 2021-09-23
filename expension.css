@@ -2,6 +2,10 @@
   background-color: #3f51b5 !important;
 }
 
+#calendar-link {
+  padding: 0px 0.75rem;
+}
+
 #schedule hr {
   -webkit-box-sizing: content-box;
           box-sizing: content-box;
@@ -518,7 +522,7 @@
 #schedule .row {
   margin-left: auto;
   margin-right: auto;
-  margin-bottom: 20px;
+  /* margin-bottom: 20px; */
 }
 
 #schedule .row:after {
