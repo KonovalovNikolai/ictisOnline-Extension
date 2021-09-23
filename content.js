@@ -95,8 +95,9 @@ function markWeek() {
 `
 var script = document.createElement("script");
 script.textContent = injectedCode;
-
 (document.head).appendChild(script);
+
+document.getElementsByTagName("link")[0].remove();
 
 if (localStorage.lastRequest){
     input.value = localStorage.lastRequest;

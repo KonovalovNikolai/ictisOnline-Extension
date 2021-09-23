@@ -10,6 +10,7 @@
         },
         {
             "matches": [ "http://165.22.28.187/schedule-api/static/index.html" ],
+            "css": ["expension.css"],
             "js": ["content.js"]
         }
     ]
