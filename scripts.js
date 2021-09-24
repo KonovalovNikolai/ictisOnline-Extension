@@ -10,47 +10,33 @@ tableIndex == 1 ? 8 : tableIndex;
 
 var clockId = undefined;
 
-function hide(element) {
-    element.style.display = "none";
-}
-
-function show(element) {
-    element.style.display = "";
-}
-
-document.getElementById("search-button").onclick = function () {
-    var value = document.getElementById("search-field").value;
+$("#search-button").click( function () {
+    var value = $("#search-field").val();
     if (value != ''){
         localStorage.lastRequest = value;
     }
+
     search(value);
-}
+});
 
-document.getElementById('search-field').onkeyup = function(event) {
-  if (event.key === 13 || event.keyCode === 13) {
-    event.preventDefault();
-    document.getElementById('search-button').click();
-  }
-};
-
-document.getElementById('list-block').onclick = function (event) {
-    event.preventDefault();
-    if (event.target.tagName === 'A') {
-        var a = event.target;
-        var group = a.getAttribute('doc_group');
-        global_group = group;
-        getFromGroup(group);
+$('#search-field').keyup(function(event) {
+    if (event.which == 13) {
+        event.preventDefault();
+        $('#search-button').click();
     }
-};
+});
 
-document.getElementById('week-block').onclick = function (event) {
+$(document).on("click", ".collection-item", function (event) {
     event.preventDefault();
-    if (event.target.tagName === 'DIV') {
-        var a = event.target;
-        var week = a.getAttribute('week');
-        getFromGroupWeek(global_group, week);
-    }
-};
+    var group = $(this).attr('doc_group');
+    getFromGroup(group);
+});
+
+$(document).on("click", ".chip", function (event) {
+    event.preventDefault();
+    var week = $(this).attr("week");
+    getFromGroupWeek(global_group, week);
+});
 
 function search(query) {
     var xhttp = new XMLHttpRequest();
@@ -67,15 +53,17 @@ function processResult(response) {
     response = JSON.parse(response);
 
     if (response.choices) {
-        document.getElementById("week-block").innerHTML = '';
-        hide(document.getElementById("table-block"));
         clearInterval(clockId);
+
+        $("#week-block").empty();
+        $("#table-block").hide();
 
         parseListFromResponse(response);
     } else if (response.table) {
-        document.getElementById("week-block").innerHTML = '';
-        hide(document.getElementById("list-block"));
         clearInterval(clockId);
+
+        $("#week-block").empty();
+        $("#list-block").hide();
 
         setCalendarLink(response);
         parseWeekFromResponse(response);
@@ -87,26 +75,22 @@ function processResult(response) {
 }
 
 function markWeek() {
-    console.log("hello");
-    var week = global_week;
-
-    var el = document.getElementById('week-block');
-    if (!el) {
+    var weekBlock = $('#week-block');
+    if (!weekBlock) {
         return;
     }
 
-    var weekBlock = el.getElementsByTagName('a');
-    for (var i = 0;  i < weekBlock.length; i++) {
-        if (parseInt(weekBlock[i].firstChild.textContent) === parseInt(week)) {
-            weekBlock[i].firstChild.style.setProperty('background-color', 'var(--selected-week-color)');
+    $(weekBlock).children('div').each(function () {
+        if ($(this).text() == global_week) {
+            $(this).css('background-color', 'var(--selected-week-color)');
         }
-        else if (parseInt(weekBlock[i].firstChild.textContent) === parseInt(currentWeek)) {
-            weekBlock[i].firstChild.style.setProperty('background-color', 'var(--current-week-color)');
+        else if ($(this).text() == currentWeek) {
+            $(this).css('background-color', 'var(--current-week-color)');
         }
-        else {
-            weekBlock[i].firstChild.style.setProperty('background-color', 'var(--unselected-week-color)');
+        else  {
+            $(this).css('background-color', 'var(--unselected-week-color)');
         }
-    }
+    });
 }
 
 function parseTableFromResponse(response) {
@@ -137,8 +121,13 @@ function parseTableFromResponse(response) {
             var td = document.createElement("td");
             td.textContent = table[i][j];
 
+            if (table[i][j] != '' && j != 0) {
+                td.classList.add("hideable");
+            }
+
             tr.appendChild(td);
         }
+        
 
         if (currentWeek === global_week && tableIndex == i){
             tr.classList.add("current-day");
@@ -149,12 +138,12 @@ function parseTableFromResponse(response) {
 
     clockTimer();
     clockId =  setInterval(clockTimer, 1000);
-    
-    show(document.getElementById("table-block"));
+
+    $("#table-block").show();
 }
 
 function parseListFromResponse(response) {
-    var listBlock = document.getElementById("list-block");
+    var listBlock = $("#list-block");
 
     for (var i in response.choices) {
         var a = document.createElement("a");
@@ -164,10 +153,10 @@ function parseListFromResponse(response) {
         a.setAttribute("doc_group", response.choices[i].group);
         a.textContent =  response.choices[i].name;
 
-        listBlock.appendChild(a);
+        $(listBlock).append(a);
     }
 
-    show(listBlock);
+    $(listBlock).show();
 }
 
 function setCalendarLink(response) {
@@ -186,25 +175,19 @@ function setCalendarLink(response) {
 // }
 
 function parseHeaderFromResponse(response) {
-    var header = document.getElementById("header-block");
-    header.textContent = response.table.type + ' ' + response.table.name;
+    $("#header-block").text(`${response.table.type} ${response.table.name}`);
 }
 
 function parseWeekFromResponse(response) {
     var weekBlock = document.getElementById("week-block");
 
     for (var i in response.weeks) {
-        var a = document.createElement("a");
-        a.href = "#!";
-
         var div = document.createElement("div");
         div.classList.add("chip");
         div.textContent = response.weeks[i];
         div.setAttribute("week", response.weeks[i]);
 
-        a.appendChild(div);
-
-        weekBlock.appendChild(a);
+        weekBlock.appendChild(div);
     }
 
 }

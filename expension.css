@@ -19,11 +19,6 @@
   width: 100%;
 }
 
-#calendar-link {
-  /* padding: 0px 0.75rem; */
-}
-
-
 #schedule html {
   -webkit-box-sizing: border-box;
           box-sizing: border-box;
@@ -210,6 +205,7 @@
   background-color: #e4e4e4;
   margin-bottom: 5px;
   margin-right: 5px;
+  cursor: pointer;
 }
 
 #schedule .chip:focus {
