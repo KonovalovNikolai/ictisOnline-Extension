@@ -1,3 +1,5 @@
+document.title = 'ictisOnline Extension';
+
 
 document.getElementsByTagName("link")[0].remove();
 document.getElementsByTagName("script")[0].remove();

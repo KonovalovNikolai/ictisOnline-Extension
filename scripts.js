@@ -5,8 +5,10 @@ var global_week = null;
 var firstRequest = true;
 var currentWeek = null;
 
-var index = (new Date()).getDay() + 1;
-index == 1 ? 8 : index;
+var tableIndex = (new Date()).getDay() + 1;
+tableIndex == 1 ? 8 : tableIndex;
+
+var clockId = undefined;
 
 function hide(element) {
     element.style.display = "none";
@@ -64,14 +66,16 @@ function search(query) {
 function processResult(response) {
     response = JSON.parse(response);
 
-    document.getElementById("week-block").innerHTML = '';
-
     if (response.choices) {
+        document.getElementById("week-block").innerHTML = '';
         hide(document.getElementById("table-block"));
+        clearInterval(clockId);
 
         parseListFromResponse(response);
     } else if (response.table) {
+        document.getElementById("week-block").innerHTML = '';
         hide(document.getElementById("list-block"));
+        clearInterval(clockId);
 
         setCalendarLink(response);
         parseWeekFromResponse(response);
@@ -106,7 +110,7 @@ function markWeek() {
 }
 
 function parseTableFromResponse(response) {
-    // console.log(response);
+    console.log(response);
 
     var table = response.table.table;
 
@@ -136,13 +140,16 @@ function parseTableFromResponse(response) {
             tr.appendChild(td);
         }
 
-        if (currentWeek === global_week && index == i){
+        if (currentWeek === global_week && tableIndex == i){
             tr.classList.add("current-day");
         }
 
         tbody.appendChild(tr);
     }
 
+    clockTimer();
+    clockId =  setInterval(clockTimer, 1000);
+    
     show(document.getElementById("table-block"));
 }
 
@@ -227,12 +234,27 @@ function getFromGroupWeek(group, week) {
     xhttp.send();
 }
 
+function clockTimer() {
+    var tbody = document.getElementsByClassName("current-day")[0];
 
-// var target = document.querySelector('#table-block');
-// var week_observer = new MutationObserver(function(mutations) {
-//   mutations.forEach(function(mutation) {
-//     markWeek();
-//   });
-// });
-// var config = { attributes: true, childList: true, characterData: true };
-// week_observer.observe(target, config);
+    if (!tbody){
+        return;
+    }
+
+    var date = new Date();
+    // Перевод времени в секунды
+    var time = date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds();
+
+    for (var i = 0; i < timeDiapasons.length; i++) {
+        if (timeDiapasons[i].includes(time)) {
+            var percent = (time - timeDiapasons[i].start) / (timeDiapasons[i].end - timeDiapasons[i].start) * 100;
+            tbody.children[i+1].style = `background: linear-gradient(to right, var(--current-week-color) ${percent}%, var(--selected-week-color) ${percent}%);`;
+        }
+        else if (timeDiapasons[i].start > time) {
+            tbody.children[i+1].style = "background-color: var(--selected-week-color);";
+        }
+        else {
+            tbody.children[i+1].style = "background-color: var(--current-week-color);";
+        }
+    }
+}
