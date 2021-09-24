@@ -8,7 +8,7 @@ var currentWeek = null;
 var index = (new Date()).getDay() + 1;
 index == 1 ? 8 : index;
 
-docment.getElementById("search-button").onclick = function () {
+document.getElementById("search-button").onclick = function () {
     var value = document.getElementById("search-field").value;
     if (value != ''){
         localStorage.lastRequest = value;
@@ -17,9 +17,10 @@ docment.getElementById("search-button").onclick = function () {
 }
 
 function parseTableFromResponse(response) {
-    console.log(response);
+    // console.log(response);
 
     var table = response.table.table;
+
     if (!table.length) {
         noTableRender(response);
         return;
@@ -33,39 +34,37 @@ function parseTableFromResponse(response) {
         firstRequest = false;
     }
 
-    var html = '<table class="striped"><thead>';
-    var separator = '</thead><tbody>';
-    var end = '</tbody></table>';
-    var counter = 0;
+    var tableElem = document.createElement("table");
+    tableElem.classList.add("striped");
 
-    var rowEnd = '</tr>';
+    var theadElem = document.createElement("thead");
+    var tbodyElem = document.createElement("tbody");
+
     for (var i in table) {
-        var row = '';
+        var tr = document.createElement("tr");
 
         for (var j in table[i]) {
-            var template = '<td>' + table[i][j] + '</td>';
-            row += template;
+            var td = document.createElement("td");
+            td.textContent = table[i][j];
+            tr.appendChild(td);
         }
 
-        var rowStart = '<tr>';
         if (currentWeek === global_week && index == i){
-            rowStart = '<tr style="background-color: rgb(155, 204, 137)">';
+            tr.style = "background-color: rgb(155, 204, 137)";
         }
 
-        row = rowStart + row + rowEnd;
-        counter += 1;
-
-        if (counter === 2) {
-            row += separator;
+        if (i < 2) {
+            theadElem.appendChild(tr);
         }
-
-        html += row;
+        else {
+            tbodyElem.appendChild(tr);
+        }
     }
 
-    html += end;
-    document.getElementById("table-block").innerHTML = html;
+    tableElem.appendChild(theadElem);
+    tableElem.appendChild(tbodyElem);
 
-    firstRequest = false;
+    document.getElementById("table-block").appendChild(tableElem);
 }
 
 function markWeek() {
@@ -129,58 +128,73 @@ function search(query) {
 
 function processResult(response) {
     response = JSON.parse(response);
+
+    document.getElementById("list-block").innerHTML = '';
+    document.getElementById("week-block").innerHTML = '';
+    document.getElementById("table-block").innerHTML = '';
+    document.getElementById("header-block").innerHTML = '';
+    document.getElementById("calendar-link").innerHTML = '';
+
     if (response.choices) {
         parseListFromResponse(response);
-        document.getElementById("table-block").innerHTML = '';
-        document.getElementById("header-block").innerHTML = '';
-        document.getElementById("week-block").innerHTML = '';
-        document.getElementById("calendar-link").innerHTML = '';
     } else if (response.table) {
-        parseTableFromResponse(response);
         setCalendarLink(response);
-        parseHeaderFromResponse(response);
         parseWeekFromResponse(response);
-        document.getElementById("list-block").innerHTML = '';
+        parseTableFromResponse(response);
+        parseHeaderFromResponse(response);
     }
 }
 
 function parseListFromResponse(response) {
-    var html = '<div class="collection">';
-    var end = '</div>';
+    var listBlock = document.getElementById("list-block");
+
     for (var i in response.choices) {
-        var template = '<a href="#!" class="collection-item" doc_group="' +
-            response.choices[i].group + '">' + response.choices[i].name + '</a>';
-        html += template;
+        var a = document.createElement("a");
+
+        a.href = "#!";
+        a.classList.add("collection-item");
+        a.setAttribute("doc_group", response.choices[i].group);
+        a.textContent =  response.choices[i].name;
+
+        listBlock.appendChild(a);
     }
-    html += end;
-    document.getElementById("list-block").innerHTML = html;
 }
 
 function setCalendarLink(response) {
-    var group = response.table.link;
-    var html = '<a href="/schedule-api/calendar/'+group+'">РЎРєР°С‡Р°С‚СЊ РєР°Р»РµРЅРґР°СЂСЊ</a>';
-    document.getElementById('calendar-link').innerHTML = html;
+    var a = document.getElementById('calendar-link');
+    a.href = "/schedule-api/calendar/" + response.table.link;
 }
 
 function noTableRender(response) {
     global_week = response.table.week;
     global_group = response.table.group;
-    document.getElementById("table-block").innerHTML = '<p>РќРµС‚ СЂР°СЃРїРёСЃР°РЅРёСЏ РЅР° СЌС‚Сѓ РЅРµРґРµР»СЋ</p>';
+
+    var tableBlock = document.getElementById("table-block");
+    tableBlock.innerHTML = '<p>Нет расписания.</p>';
 }
 
 function parseHeaderFromResponse(response) {
-    document.getElementById("header-block").innerHTML =
-        '<h3>' + response.table.type + ' ' +
-        response.table.name + '<span class="print"> - РќРµРґРµР»СЏ  '+response.table.week+'</span></h3>';
+    var header = document.getElementById("header-block");
+    header.textContent = response.table.type + ' ' + response.table.name;
 }
 
 function parseWeekFromResponse(response) {
-    var weeks = '<span>РќРµРґРµР»Рё: </span>';
+    var weekBlock = document.getElementById("week-block");
+
     for (var i in response.weeks) {
-        weeks += '<a href="#!"><div class="chip" week="' + response.weeks[i] +
-            '">' + response.weeks[i] + '</div></a>'
+        var a = document.createElement("a");
+        a.href = "#!";
+
+        var div = document.createElement("div");
+        div.classList.add("chip");
+        div.textContent = response.weeks[i];
+        div.setAttribute("week", response.weeks[i]);
+
+        a.appendChild(div);
+
+        weekBlock.appendChild(a);
     }
-    document.getElementById("week-block").innerHTML = weeks;
+
 }
 
 function getFromGroup(group) {
