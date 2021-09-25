@@ -130,7 +130,7 @@ function parseTableFromResponse(response) {
         
 
         if (currentWeek === global_week && tableIndex == i){
-            tr.classList.add("current-day");
+            tr.id = "current-day";
         }
 
         tbody.appendChild(tr);
