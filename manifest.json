@@ -6,12 +6,12 @@
     "content_scripts": [
         {
             "matches": [ "http://ictis.online/", "https://ictis.online/"],
-            "js": ["relocate.js"]
+            "js": ["js/ictis/relocate.js"]
         },
         {
             "matches": [ "http://165.22.28.187/schedule-api/static/index.html" ],
-            "css": ["expension.css"],
-            "js": ["injectHTML.js", "jquery-3.6.0.js", "scripts.js" , "content.js"]
+            "css": ["css/expension.css"],
+            "js": ["js/external/jquery-3.6.0.js", "js/main/injectHTML.js", "js/main/clock.js", "js/main/scripts.js"]
         }
     ]
 }

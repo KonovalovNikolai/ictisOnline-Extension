@@ -217,27 +217,7 @@ function getFromGroupWeek(group, week) {
     xhttp.send();
 }
 
-function clockTimer() {
-    var tbody = document.getElementsByClassName("current-day")[0];
-
-    if (!tbody){
-        return;
-    }
-
-    var date = new Date();
-    // Перевод времени в секунды
-    var time = date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds();
-
-    for (var i = 0; i < timeDiapasons.length; i++) {
-        if (timeDiapasons[i].includes(time)) {
-            var percent = (time - timeDiapasons[i].start) / (timeDiapasons[i].end - timeDiapasons[i].start) * 100;
-            tbody.children[i+1].style = `background: linear-gradient(to right, var(--current-week-color) ${percent}%, var(--selected-week-color) ${percent}%);`;
-        }
-        else if (timeDiapasons[i].start > time) {
-            tbody.children[i+1].style = "background-color: var(--selected-week-color);";
-        }
-        else {
-            tbody.children[i+1].style = "background-color: var(--current-week-color);";
-        }
-    }
+if (localStorage.lastRequest) {
+    $("#search-field").val(localStorage.lastRequest);
+    $("#search-button").click();
 }
