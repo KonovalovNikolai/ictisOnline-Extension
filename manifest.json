@@ -11,7 +11,15 @@
         {
             "matches": [ "http://165.22.28.187/schedule-api/static/index.html" ],
             "css": ["css/expension.css"],
-            "js": ["js/external/jquery-3.6.0.js", "js/main/injectHTML.js", "js/main/clock.js", "js/main/scripts.js"]
+            "js": [
+                "js/external/jquery-3.6.0.js",
+                "js/main/injectHTML.js",
+                "js/main/misc/timeLine.js",
+                "js/main/misc/groupList.js",
+                "js/main/misc/inputField.js",
+                "js/main/misc/scheduleTable.js",
+                "js/main/main.js"
+            ]
         }
     ]
 }
