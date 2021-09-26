@@ -1,12 +1,14 @@
 class ScheduleTable {
-    _currentWeek = undefined;
-    _selectedWeek = undefined;
+    _currentWeekNumber = undefined;
+    _selectedWeekNumber = undefined;
     currentGroup = undefined;
+
+    selectedWeek = undefined;
 
     _firstParse = true;
 
-    constructor(timeLine = null,
-                cellManipulator = null,
+    constructor(timeLine,
+                cellManipulator,
                 weekBlockItemsClass="chip",
                 tableSelector="#table-block",
                 tBodySelector="#tbody-block",
@@ -32,11 +34,16 @@ class ScheduleTable {
 
     hide() {
         $(this.tableBlock).hide();
+        this.selectedWeek = undefined;
         this._timeLine.ClearInterval()
     }
 
     show() {
         $(this.tableBlock).show();
+    }
+
+    isCurrentWeek() {
+        return this._currentWeekNumber == this._selectedWeekNumber;
     }
 
     ShowTimeLine() {
@@ -46,7 +53,7 @@ class ScheduleTable {
     parseFromResponse(response) {
         this._timeLine.ClearInterval()
 
-        this._selectedWeek = response.table.week;
+        this._selectedWeekNumber = response.table.week;
         this.currentGroup = response.table.group;
 
         if (this._firstParse) {
@@ -100,7 +107,7 @@ class ScheduleTable {
                 tr.appendChild(td);
             }
             
-            if (this._currentWeek == this._selectedWeek && this._currentDayRowIndex === i){
+            if (this._currentWeekNumber == this._selectedWeekNumber && this._currentDayRowIndex === i){
                 this._timeLine.MarkDay(tr);
             }
 
@@ -118,10 +125,11 @@ class ScheduleTable {
     markWeek() {
         var weeks = $(this.weekBlock).children('div');
         for(var week of weeks) {
-            if ($(week).text() == this._selectedWeek) {
+            if ($(week).text() == this._selectedWeekNumber) {
+                this.selectedWeek = week;
                 $(week).css('background-color', 'var(--selected-week-color)');
             }
-            else if ($(week).text() == this._currentWeek) {
+            else if ($(week).text() == this._currentWeekNumber) {
                 $(week).css('background-color', 'var(--current-week-color)');
             }
             else  {

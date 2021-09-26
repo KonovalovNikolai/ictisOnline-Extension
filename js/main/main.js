@@ -1,15 +1,18 @@
 const baseUrl = '/schedule-api';
 
+var timeLine = new TimeLine();
+var cellManipulator = new CellManipulator();
+
 const groupList = new GroupList();
 const inputField = new InputField();
-const scheduleTable = new ScheduleTable(timeLine=new TimeLine(),
-                                        CellManipulator=new CellManipulator())
+const scheduleTable = new ScheduleTable(timeLine=timeLine, cellManipulator=cellManipulator)
 
 $(inputField.button).click(function () {
     var value = inputField.value;
     if (value != ''){
         localStorage.lastRequest = value;
     }
+
     search(value);
 });
 
@@ -17,6 +20,39 @@ $(inputField.field).keyup(function (event) {
     if (event.which == 13) {
         event.preventDefault();
         $(inputField.button).click()
+    }
+});
+
+$(document).keydown(function (event) {
+    if (!event.ctrlKey) {
+        return;
+    }
+
+    cellManipulator.HighlightManipulatableElements();
+});
+
+$(document).keyup(function (event) {    
+    if (event.which != 17) {
+        return;
+    }
+    cellManipulator.UndoHighlightManipulatableElements();
+});
+
+$(document).on("click", cellManipulator.highlightedElementsSelector, function () {
+    cellManipulator.MarkElementAsHidded(this);
+
+    if (scheduleTable.selectedWeek) {
+        $(scheduleTable.selectedWeek).click();
+        return;
+    }
+});
+
+$(document).on("click", cellManipulator.hiddedElementSelector, function () {
+    cellManipulator.UnmarkElementAsHided(this);
+    
+    if (scheduleTable.selectedWeek) {
+        $(scheduleTable.selectedWeek).click();
+        return;
     }
 });
 

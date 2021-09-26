@@ -6,6 +6,15 @@
   --btn-color: #3f51b5 !important;
 }
 
+.hidded {
+  opacity: .3;
+}
+
+.highlighted {
+  /* color: var(--selected-week-color); */
+  cursor: pointer;
+}
+
 #current-day {
   background-color: var(--current-week-color) !important;
 }
