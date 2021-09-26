@@ -1,8 +1,9 @@
+const baseUrl = '/schedule-api';
+
 const groupList = new GroupList();
 const inputField = new InputField();
-const scheduleTable = new ScheduleTable()
-
-const baseUrl = '/schedule-api';
+const scheduleTable = new ScheduleTable(timeLine=new TimeLine(),
+                                        CellManipulator=new CellManipulator())
 
 $(inputField.button).click(function () {
     var value = inputField.value;

@@ -15,6 +15,7 @@
                 "js/external/jquery-3.6.0.js",
                 "js/main/injectHTML.js",
                 "js/main/misc/timeLine.js",
+                "js/main/misc/сellManipulator.js",
                 "js/main/misc/groupList.js",
                 "js/main/misc/inputField.js",
                 "js/main/misc/scheduleTable.js",

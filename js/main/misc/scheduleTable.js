@@ -2,13 +2,12 @@ class ScheduleTable {
     _currentWeek = undefined;
     _selectedWeek = undefined;
     currentGroup = undefined;
-    _interval = undefined;
 
     _firstParse = true;
-    _addsTimeLine = true;
 
-
-    constructor(weekBlockItemsClass="chip",
+    constructor(timeLine = null,
+                cellManipulator = null,
+                weekBlockItemsClass="chip",
                 tableSelector="#table-block",
                 tBodySelector="#tbody-block",
                 headerSelector="#header-block",
@@ -24,21 +23,28 @@ class ScheduleTable {
         this.weekBlockItemsClass = weekBlockItemsClass;
         this.weekBlockItemsSelector = `.${weekBlockItemsClass}`;
 
-        this._rowIndex = (new Date()).getDay() + 1;
-        this._rowIndex = (this._rowIndex == 1) ? 8 : this._rowIndex;
+        this._currentDayRowIndex = (new Date()).getDay() + 1;
+        this._currentDayRowIndex = (this._currentDayRowIndex == 1) ? 8 : this._currentDayRowIndex;
+
+        this._timeLine = timeLine;
+        this._cellManipulator = cellManipulator;
     }
 
     hide() {
         $(this.tableBlock).hide();
-        clearInterval(this._interval);
+        this._timeLine.ClearInterval()
     }
 
     show() {
         $(this.tableBlock).show();
     }
 
+    ShowTimeLine() {
+        this._timeLine.SetIntervalDraw();
+    }
+
     parseFromResponse(response) {
-        clearInterval(this._interval);
+        this._timeLine.ClearInterval()
 
         this._selectedWeek = response.table.week;
         this.currentGroup = response.table.group;
@@ -88,23 +94,20 @@ class ScheduleTable {
                 td.textContent = table[i][j];
                 
                 if (table[i][j] != '' && j != 0) {
-                    td.classList.add("hideable");
+                    this._cellManipulator.MakeManipulatable(td);
                 }
 
                 tr.appendChild(td);
             }
             
-            if (this._addsTimeLine && this._currentWeek == this._selectedWeek && this._rowIndex === i){
-                tr.id = "current-day";
+            if (this._currentWeek == this._selectedWeek && this._currentDayRowIndex === i){
+                this._timeLine.MarkDay(tr);
             }
 
             $(this.tableBody).append(tr);
         }
 
-        if (this._addsTimeLine && this._currentWeek == this._selectedWeek){
-            TimeLine.Draw();
-            this._interval =  setInterval(TimeLine.Draw, 1000);
-        }
+        this._timeLine.SetIntervalDraw();
 
     }
 

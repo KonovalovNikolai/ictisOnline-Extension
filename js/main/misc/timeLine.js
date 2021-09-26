@@ -21,8 +21,30 @@ class TimeLine {
         new Diapason(70200, 75900) // 19:30-21:05
     ];
 
-    static Draw(rowSelector="#current-day") {
-        var row = document.querySelector(rowSelector);
+    _interval = undefined;
+    _drawTimeLine = true;
+
+    constructor(currentDayRowId="current-day") {
+        this._currentDayRowId = currentDayRowId;
+    }
+
+    MarkDay(element) {
+        element.id = this._currentDayRowId
+    }
+
+    SetIntervalDraw(seconds=1000) {
+        if (this._drawTimeLine && document.getElementById(this._currentDayRowId)) {
+            this.Draw();
+            this._interval =  setInterval(this.Draw, seconds);
+        }
+    }
+
+    ClearInterval() {
+        clearInterval(this._interval);
+    }
+
+    Draw() {
+        var row = document.getElementById(this._currentDayRowId);
         if(!row) {
             return;
         }
