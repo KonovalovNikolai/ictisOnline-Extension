@@ -101,7 +101,7 @@ class ScheduleTable {
             $(this.tableBody).append(tr);
         }
 
-        if (this._addsTimeLine){
+        if (this._addsTimeLine && this._currentWeek == this._selectedWeek){
             TimeLine.Draw();
             this._interval =  setInterval(TimeLine.Draw, 1000);
         }
