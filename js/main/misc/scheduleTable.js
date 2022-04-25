@@ -57,7 +57,7 @@ class ScheduleTable {
         this.currentGroup = response.table.group;
 
         if (this._firstParse) {
-            this._currentWeek = response.table.week;
+            this._currentWeekNumber = response.table.week;
             this._firstParse = false;
         }
 
