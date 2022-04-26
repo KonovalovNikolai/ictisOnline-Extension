@@ -1,10 +1,10 @@
 class Diapason {
-    constructor(start, end){
+    constructor(start, end) {
         this.start = start;
         this.end = end;
     }
 
-    includes(number){
+    includes(number) {
         return number > this.start && number < this.end ? true : false;
     }
 }
@@ -24,18 +24,20 @@ class TimeLine {
     _interval = undefined;
     _drawTimeLine = true;
 
-    constructor(currentDayRowId="current-day") {
+    constructor(currentDayRowId = "current-day") {
         this._currentDayRowId = currentDayRowId;
     }
 
     MarkDay(element) {
-        element.id = this._currentDayRowId
+        element.id = this._currentDayRowId;
     }
 
-    SetIntervalDraw(seconds=1000) {
-        if (this._drawTimeLine && document.getElementById(this._currentDayRowId)) {
-            this.Draw();
-            this._interval =  setInterval(this.Draw, seconds);
+    SetIntervalDraw(seconds = 1000) {
+        const rowElement = document.getElementById(this._currentDayRowId);
+        if (this._drawTimeLine && rowElement) {
+            const drawCallback = () => (this.Draw(rowElement));
+            drawCallback();
+            this._interval = setInterval(drawCallback, seconds);
         }
     }
 
@@ -43,28 +45,23 @@ class TimeLine {
         clearInterval(this._interval);
     }
 
-    Draw() {
-        var row = document.getElementById(this._currentDayRowId);
-        if(!row) {
-            return;
-        }
-
+    Draw(rowElement) {
         var date = new Date();
         // Перевод времени в секунды
         var time = date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds();
 
-        for (var i = 0; i < row.children.length; i++) {
+        for (var i = 0; i < rowElement.children.length; i++) {
             if (i == 0) continue;
 
-            if (TimeLine.timeDiapasons[i-1].includes(time)) {
-                var percent = (time - TimeLine.timeDiapasons[i-1].start) / (TimeLine.timeDiapasons[i-1].end - TimeLine.timeDiapasons[i-1].start) * 100;
-                row.children[i].style = `background: linear-gradient(to right, var(--current-week-color) ${percent}%, var(--selected-week-color) ${percent}%);`;
+            if (TimeLine.timeDiapasons[i - 1].includes(time)) {
+                var percent = (time - TimeLine.timeDiapasons[i - 1].start) / (TimeLine.timeDiapasons[i - 1].end - TimeLine.timeDiapasons[i - 1].start) * 100;
+                rowElement.children[i].style = `background: linear-gradient(to right, var(--current-week-color) ${percent}%, var(--selected-week-color) ${percent}%);`;
             }
-            else if (TimeLine.timeDiapasons[i-1].start > time) {
-                row.children[i].style = "background-color: var(--selected-week-color);";
+            else if (TimeLine.timeDiapasons[i - 1].start > time) {
+                rowElement.children[i].style = "background-color: var(--selected-week-color);";
             }
             else {
-                row.children[i].style = "background-color: var(--current-week-color);";
+                rowElement.children[i].style = "background-color: var(--current-week-color);";
             }
         }
     }
